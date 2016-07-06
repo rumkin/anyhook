@@ -1,0 +1,18 @@
+{
+  "destinations": [
+    {
+      "name": "stage",
+      "host": "78.47.172.45",
+      "user": "hyphen",
+      "dest": "/home/hyphen/githook",
+      "sshKey": "/projects/.ssh/hyphen"
+    }
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "tmp",
+    "local",
+    "rsync.json"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "main": "src/index.js",
+  "scripts": {
+    "cov": "istanbul cover node_modules/mocha/bin/_mocha -- -u exports -R spec test/**.spec.js",
+    "test": "mocha test/**.spec.js",
+    "sync": "rsynced"
+  },
+  "license": "MIT",
+  "name": "githook",
+  "version": "1.0.0",
+  "description": "Listen bitbucket push hook and run specified script",
+  "bin": {
+    "hooker": "cli.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rumkin/hooked.git"
+  },
+  "keywords": [
+    "deployment",
+    "ci",
+    "continuous-integration",
+    "webhooks",
+    "web-hooks",
+    "hooks"
+  ],
+  "author": "rumkin",
+  "bugs": {
+    "url": "https://github.com/rumkin/hooked/issues"
+  },
+  "homepage": "https://github.com/rumkin/hooked#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0"
+  },
+  "devDependencies": {
+    "istanbul": "^0.4.4",
+    "mocha": "^2.5.3",
+    "rsynced": "^1.0.2"
+  }
+}
