@@ -1,4 +1,10 @@
 {
+  "name": "anyhook",
+  "version": "0.1.0",
+  "description": "Listen bitbucket push hook and run specified script",
+  "bin": {
+    "anyhook": "cli.js"
+  },
   "main": "src/index.js",
   "scripts": {
     "cov": "istanbul cover node_modules/mocha/bin/_mocha -- -u exports -R spec test/**.spec.js",
@@ -6,18 +12,12 @@
     "sync": "rsynced"
   },
   "license": "MIT",
-  "name": "githook",
-  "version": "1.0.0",
-  "description": "Listen bitbucket push hook and run specified script",
-  "bin": {
-    "hooker": "cli.js"
-  },
   "directories": {
     "test": "test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rumkin/hooked.git"
+    "url": "git+https://github.com/rumkin/anyhook.git"
   },
   "keywords": [
     "deployment",
@@ -29,12 +29,14 @@
   ],
   "author": "rumkin",
   "bugs": {
-    "url": "https://github.com/rumkin/hooked/issues"
+    "url": "https://github.com/rumkin/anyhook/issues"
   },
-  "homepage": "https://github.com/rumkin/hooked#readme",
+  "homepage": "https://github.com/rumkin/anyhook#readme",
   "dependencies": {
+    "argentum": "^0.5.4",
     "body-parser": "^1.15.2",
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "rsynced": "^1.0.4"
   },
   "devDependencies": {
     "istanbul": "^0.4.4",

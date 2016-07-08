@@ -1,0 +1,14 @@
+{
+    "ci": [
+        {
+            "cmd": "bash",
+            "args": ["-c", "echo 'Hello hooks'"],
+            "stdio": "../tmp/ci.log"
+        },
+        {
+            "cmd": "bash",
+            "args": ["pull.sh", "/projects/ci-2", "origin", "master"],
+            "stdio": "../tmp/ci-2.log"
+        }
+    ]
+}
