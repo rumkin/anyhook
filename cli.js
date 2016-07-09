@@ -22,7 +22,7 @@ const config = argentum.parse(argv, {
         host: '0.0.0.0',
         port: process.env.PORT || 8080,
         debug: !!process.env.DEBUG || false,
-        hooks: process.cwd() + '/hook.json',
+        hooks: process.cwd() + '/webhook.json',
         verbose: !!process.env.VERBOSE,
     },
 });
@@ -43,10 +43,15 @@ if (! fs.existsSync(config.hooks)) {
 }
 
 express()
-.use('/api/hook/', middleware({
+.use(bodyParser.json())
+.use('/api/webhook/', middleware({
     verbose: config.verbose,
     debug: config.debug,
     bindings: require(config.hooks),
+    platforms: [
+        require('./src/github-extractor.js'),
+        require('./src/bitbucket-extractor.js'),
+    ],
 }))
 .listen(config.port, config.host, () => {
     if (VERBOSE) {

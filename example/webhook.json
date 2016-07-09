@@ -2,7 +2,7 @@
     "ci": [
         {
             "cmd": "bash",
-            "args": ["-c", "echo 'Hello hooks'"],
+            "args": ["-c", "echo \"Push: $WEBHOOK_REPO\""],
             "stdio": "../tmp/ci.log"
         },
         {

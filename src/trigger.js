@@ -6,7 +6,7 @@ const fs = require('fs');
 
 module.exports = trigger;
 
-function trigger(call) {
+function trigger(call, env) {
     return new Promise((resolve, reject) => {
         var proc;
         if (typeof call === 'string') {
@@ -44,7 +44,7 @@ function trigger(call) {
                 stdout ? 'pipe' : 'ignore',
                 stderr ? 'pipe' : 'ignore',
             ],
-            env: call.env,
+            env: Object.assign({}, call.env, env),
         });
 
         if (stdout) {
