@@ -34,9 +34,7 @@
   "homepage": "https://github.com/rumkin/anyhook#readme",
   "dependencies": {
     "argentum": "^0.5.4",
-    "body-parser": "^1.15.2",
-    "express": "^4.14.0",
-    "rsynced": "^1.0.4"
+    "express": "^4.14.0"
   },
   "devDependencies": {
     "istanbul": "^0.4.4",
