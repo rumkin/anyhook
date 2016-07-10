@@ -1,7 +1,10 @@
+'use strict';
+
 const express = require('express');
 const {inspect} = require('util');
 const trigger = require('./trigger.js');
 const Extractor = require('./extractor.js');
+const chalk = require('chalk');
 
 module.exports = function(options = {}) {
     var bindings = options.bindings;
@@ -17,8 +20,6 @@ module.exports = function(options = {}) {
             next();
             return;
         }
-
-        console.log(JSON.stringify(req.body, null, 4));
 
         const data = extractor.extract(req.body);
 
@@ -40,11 +41,27 @@ module.exports = function(options = {}) {
         }
 
         var repoBindings = bindings[repo];
-        if (! Array.isArray(repoBindings)) {
+        var enabled = true;
+        if (typeof repoBindings === 'object' && repoBindings.constructor === Object) {
+            repoBindings = repoBindings.exec;
+
+            if (repoBindings.enabled === false) {
+                enabled = false;
+            }
+        }
+
+        if (typeof repoBindings === 'string'){
             repoBindings = [repoBindings];
         }
 
         res.end();
+
+        if (! enabled) {
+            return;
+        }
+
+        repoBindings = repoBindings.map(trigger.normalize)
+        .filter(binding => binding.enabled !== false);
 
         Promise.all(repoBindings.map(
             (binding) => trigger(binding, env)
@@ -56,19 +73,21 @@ module.exports = function(options = {}) {
         ))
         .then((reports) => {
             var hasError = false;
+            console.log('Repo %s:', repo);
+
             reports.forEach((report, i) => {
-                if (report.result) {
-                    return;
+                var {binding, result, error} = report;
+
+                console.log(
+                    '\t' + (result ? chalk.green('OK  ') : chalk.red('FAIL')),
+                    binding.cmd, binding.args.map(arg => arg.search(/\s/) > -1 ? `"${arg}"` : arg).join(' ')
+                );
+
+                if (error) {
+                    console.error(chalk.yellow('\t%s'), error.message);
                 }
-
                 hasError = true;
-
-                console.error('Binding %s:%s error:', repo, i, report.error.message);
             });
-
-            if (verbose) {
-                console.log('Repository %s %s', repo, hasError ? 'ERROR' : 'OK');
-            }
         });
 
         res.end('ok');

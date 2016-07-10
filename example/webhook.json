@@ -7,8 +7,15 @@
         },
         {
             "cmd": "bash",
+            "enabled": false,
             "args": ["pull.sh", "/projects/ci-2", "origin", "master"],
             "stdio": "../tmp/ci-2.log"
         }
-    ]
+    ],
+    "ci2": {
+        "enabled": false,
+        "exec": [
+            "echo $WEBHOOK_REPO"
+        ]
+    }
 }

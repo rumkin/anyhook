@@ -65,3 +65,17 @@ function trigger(call, env) {
         });
     });
 }
+
+function normalizeBinding(binding) {
+    if (typeof binding !== 'string') {
+        return binding;
+    }
+
+    return {
+        cmd: 'bash',
+        args: ['-c', binding],
+        enabled: true,
+    };
+}
+
+trigger.normalize = normalizeBinding;
