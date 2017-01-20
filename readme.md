@@ -14,14 +14,18 @@ npm i anyhook -g
 Create `webhook.json`:
 ```json
 {
-    "repoName": [
-        "echo \"Updated: $WEBHOOK_REPO\" > /var/log/repo-name.log",
-        {
-            "cmd": "bash",
-            "args": ["-c", "echo \"Updated: $WEBHOOK_REPO\""],
-            "stdio": "/var/log/repo-name.log",
-        }
-    ]
+    "repoName": {
+        "token": "8ecc7e51-b2d6-4f75-ad32-2971ca04a76f",
+        "enabled": true,
+        "exec": [
+            "echo \"Updated: $WEBHOOK_REPO\" > /var/log/repo-name.log",
+            {
+                "cmd": "bash",
+                "args": ["-c", "echo \"Updated: $WEBHOOK_REPO\""],
+                "stdio": "/var/log/repo-name.log",
+            }
+        ]
+    }
 }
 ```
 

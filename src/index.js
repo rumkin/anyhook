@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-const {inspect} = require('util');
 const trigger = require('./trigger.js');
 const Extractor = require('./extractor.js');
 const chalk = require('chalk');
@@ -12,6 +11,7 @@ module.exports = function(options = {}) {
 
     var router = express.Router();
     var extractor = new Extractor({extractors: options.platforms || []});
+    console.log("bindings", bindings); // eslint-disable-line
 
     router.all('/:repo', (req, res, next) => {
         const repo = req.params.repo;
@@ -19,6 +19,15 @@ module.exports = function(options = {}) {
         if (repo in bindings === false) {
             next();
             return;
+        }
+
+        var repoBindings = normalizeBinding(bindings[repo]);
+
+        if (repoBindings.hasOwnProperty('token')) {
+            if (repoBindings.token !== req.query.token) {
+                res.status(403).end('Access Forbidden');
+                return;
+            }
         }
 
         const data = extractor.extract(req.body);
@@ -40,18 +49,10 @@ module.exports = function(options = {}) {
             console.log(new Date(), env);
         }
 
-        var repoBindings = bindings[repo];
         var enabled = true;
-        if (typeof repoBindings === 'object' && repoBindings.constructor === Object) {
-            repoBindings = repoBindings.exec;
 
-            if (repoBindings.enabled === false) {
-                enabled = false;
-            }
-        }
-
-        if (typeof repoBindings === 'string'){
-            repoBindings = [repoBindings];
+        if (repoBindings.enabled === false) {
+            enabled = false;
         }
 
         res.end();
@@ -60,10 +61,10 @@ module.exports = function(options = {}) {
             return;
         }
 
-        repoBindings = repoBindings.map(trigger.normalize)
+        repoBindings = repoBindings.exec.map(trigger.normalize)
         .filter(binding => binding.enabled !== false);
 
-        Promise.all(repoBindings.map(
+        Promise.all(repoBindings.exec.map(
             (binding) => trigger(binding, env)
             .then(() => {
                 return {binding, result: true};
@@ -95,3 +96,19 @@ module.exports = function(options = {}) {
 
     return router;
 };
+
+function normalizeBinding(params) {
+    if (typeof params === 'string') {
+        return {
+            enabled: true,
+            exec: [params],
+        };
+    } else if (Array.isArray(params)) {
+        return {
+            enabled: true,
+            exec: params,
+        };
+    } else {
+        return params;
+    }
+}

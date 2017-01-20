@@ -1,6 +1,6 @@
 {
   "name": "anyhook",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Listen bitbucket push hook and run specified script",
   "bin": {
     "anyhook": "cli.js"
@@ -34,6 +34,7 @@
   "homepage": "https://github.com/rumkin/anyhook#readme",
   "dependencies": {
     "argentum": "^0.5.4",
+    "body-parser": "^1.16.0",
     "chalk": "^1.1.3",
     "express": "^4.14.0"
   },
