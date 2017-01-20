@@ -11,7 +11,6 @@ module.exports = function(options = {}) {
 
     var router = express.Router();
     var extractor = new Extractor({extractors: options.platforms || []});
-    console.log("bindings", bindings); // eslint-disable-line
 
     router.all('/:repo', (req, res, next) => {
         const repo = req.params.repo;
