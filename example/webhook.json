@@ -1,5 +1,5 @@
 {
-    "ci": [
+    "test": [
         {
             "cmd": "bash",
             "args": ["-c", "echo \"Push: $WEBHOOK_REPO\""],
@@ -12,8 +12,15 @@
             "stdio": "../tmp/ci-2.log"
         }
     ],
-    "ci2": {
+    "test2": {
         "enabled": false,
+        "exec": [
+            "echo $WEBHOOK_REPO"
+        ]
+    },
+    "test3": {
+        "enabled": true,
+        "token": "SECRET-TOKEN",
         "exec": [
             "echo $WEBHOOK_REPO"
         ]
