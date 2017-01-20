@@ -13,6 +13,8 @@ module.exports = function(options = {}) {
     var extractor = new Extractor({extractors: options.platforms || []});
 
     router.all('/:repo', (req, res, next) => {
+        verbose && console.log('Request: %s', req.url);
+
         const repo = req.params.repo;
 
         if (repo in bindings === false) {
@@ -29,6 +31,8 @@ module.exports = function(options = {}) {
             }
         }
 
+        debug && console.log('Request body:\n%s', req.body);
+
         const data = extractor.extract(req.body);
 
         if (! data) {
@@ -42,7 +46,7 @@ module.exports = function(options = {}) {
             enabled = false;
         }
 
-        if (repoBindings.hasOwnProperty('branch') && data.branch !== reportBindings.branch) {
+        if (repoBindings.hasOwnProperty('branch') && data.branch !== repoBindings.branch) {
             res.end();
             return;
         }
@@ -65,10 +69,10 @@ module.exports = function(options = {}) {
             return;
         }
 
-        repoBindings = repoBindings.exec.map(trigger.normalize)
+        var exec = repoBindings.exec.map(trigger.normalize)
         .filter(binding => binding.enabled !== false);
 
-        Promise.all(repoBindings.exec.map(
+        Promise.all(exec.map(
             (binding) => trigger(binding, env)
             .then(() => {
                 return {binding, result: true};

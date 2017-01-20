@@ -41,8 +41,8 @@ function trigger(call, env) {
         proc = spawn(call.cmd, call.args, {
             stdio: [
                 null,
-                stdout ? 'pipe' : 'ignore',
-                stderr ? 'pipe' : 'ignore',
+                stdout ? 'pipe' : 'inherit',
+                stderr ? 'pipe' : 'inherit',
             ],
             env: Object.assign({}, call.env, env),
         });
