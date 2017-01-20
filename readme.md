@@ -17,6 +17,7 @@ Create `webhook.json`:
     "repoName": {
         "token": "8ecc7e51-b2d6-4f75-ad32-2971ca04a76f",
         "enabled": true,
+        "branch": "master",
         "exec": [
             "echo \"Updated: $WEBHOOK_REPO\" > /var/log/repo-name.log",
             {

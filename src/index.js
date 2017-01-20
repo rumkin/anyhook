@@ -37,6 +37,17 @@ module.exports = function(options = {}) {
             return;
         }
 
+        var enabled = true;
+
+        if (repoBindings.enabled === false) {
+            enabled = false;
+        }
+
+        if (repoBindings.hasOwnProperty('branch') && data.branch !== reportBindings.branch) {
+            res.end();
+            return;
+        }
+
         var env = {};
 
         Object.getOwnPropertyNames(data).forEach((key) => {
@@ -47,12 +58,6 @@ module.exports = function(options = {}) {
         if (verbose) {
             console.log(new Date(), repo);
             console.log(new Date(), env);
-        }
-
-        var enabled = true;
-
-        if (repoBindings.enabled === false) {
-            enabled = false;
         }
 
         res.end();

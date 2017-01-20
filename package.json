@@ -1,6 +1,6 @@
 {
   "name": "anyhook",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Listen bitbucket push hook and run specified script",
   "bin": {
     "anyhook": "cli.js"
