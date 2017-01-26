@@ -51,7 +51,7 @@ module.exports = function(options = {}) {
             return;
         }
 
-        var env = {};
+        var env = Object.assign({}, process.env);
 
         Object.getOwnPropertyNames(data).forEach((key) => {
             var varname = 'WEBHOOK_' + key.toUpperCase();

@@ -1,6 +1,6 @@
 {
   "name": "anyhook",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Listen webhooks from github or bitbucket and run execute commands",
   "bin": {
     "anyhook": "cli.js"
