@@ -1,0 +1,7 @@
+{
+    "enabled": true,
+    "token": "SECRET-TOKEN",
+    "exec": [
+        "echo $WEBHOOK_REPO"
+    ]
+}

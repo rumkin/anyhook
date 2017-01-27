@@ -1,0 +1,13 @@
+[
+    {
+        "cmd": "bash",
+        "args": ["-c", "echo \"Push: $WEBHOOK_REPO\""],
+        "stdio": "../tmp/ci.log"
+    },
+    {
+        "cmd": "bash",
+        "enabled": false,
+        "args": ["pull.sh", "/projects/ci-2", "origin", "master"],
+        "stdio": "../tmp/ci-2.log"
+    }
+]

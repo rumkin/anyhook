@@ -1,64 +1,64 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const middleware = require('./');
-const argentum = require('argentum');
 const path = require('path');
 const fs = require('fs');
+const program = require('commander');
 
-const CONFIG_PATH = '/etc/githook.json';
+const CONFIG_PATH = process.env.NODE_ENV !== 'development' ? '/etc/githook.json' : null;
 
-const argv = process.argv.slice(2);
-const config = argentum.parse(argv, {
-    aliases: {
-        v: 'verbose',
-        d: 'debug',
-        f: 'hooks',
-        D: 'dir',
-        H: 'host',
-        p: 'port',
-        c: 'config',
-    },
-    defaults: {
-        host: '0.0.0.0',
-        port: process.env.PORT || 8080,
-        debug: !!process.env.DEBUG || false,
-        hooks: process.cwd() + '/webhook.json',
-        verbose: !!process.env.VERBOSE,
-    },
-});
+program
+    .version('1.0.0')
+    .description('Modular web hook capturing util')
+    .option('-v,--verbose', 'Verbose output')
+    .option('-d,--debug', 'Debug application')
+    .option('-c,--config <path>', 'config path')
+    ;
 
-const DEBUG = config.debug;
-const VERBOSE = config.verbose;
+program
+    .command('start [dir]')
+    .option('-H,--host <host>', 'Host name')
+    .option('-p,--port <port>', 'Port')
+    .action((dir, cmd) => {
+        const config = loadConfig({
+            host: cmd.host || process.env.HOST || 'localhost',
+            port: cmd.port || process.env.PORT || '1972',
+            verbose: cmd.parent.verbose || false,
+            debug: cmd.parent.debug || false,
+            dir: dir || process.cwd(),
+        }, configPaths(cmd.parent.config, CONFIG_PATH));
 
-if ('config' in config) {
-    appendConfig(config, path.resolve(process.cwd() + config.config));
+        config.hooks = loadHooks(config.dir);
+
+        startServer(config);
+    });
+
+program
+    .command('help', {isdefault: true})
+    .action(() => {
+        program.outputHelp();
+    });
+
+program.parse(process.argv);
+
+function configPaths(...paths) {
+    return paths.filter((p) => !!p)
+    .map((p) => {
+        return path.resolve(p);
+    });
 }
 
-if (fs.existsSync(CONFIG_PATH)) {
-    appendConfig(config, CONFIG_PATH);
-}
+function loadConfig(config, paths) {
+    paths.forEach((p) => {
+        if (! fs.existsSync(p)) {
+            throw new Error(`Config "${p}" not found`);
+        }
 
-if (! fs.existsSync(config.hooks)) {
-    onError('Hooks file not found');
-}
+        appendConfig(config, p);
+    });
 
-express()
-.use(bodyParser.json())
-.use('/api/webhook/', middleware({
-    verbose: config.verbose,
-    debug: config.debug,
-    bindings: require(config.hooks),
-    platforms: [
-        require('./src/github-extractor.js'),
-        require('./src/bitbucket-extractor.js'),
-    ],
-}))
-.listen(config.port, config.host, () => {
-    if (VERBOSE) {
-        console.log('Server started at %s:%s', config.host, config.port);
-    }
-})
-;
+    return config;
+}
 
 function appendConfig(config, path) {
     const values = require(path);
@@ -73,16 +73,59 @@ function appendConfig(config, path) {
     });
 }
 
+function loadHooks(dir) {
+    let hooks = {};
+
+    if (! fs.existsSync(dir) || ! fs.statSync(dir).isDirectory()) {
+        throw new Error(`Hook directory "${dir}" is not readable`);
+    }
+
+    fs.readdirSync(dir).forEach((file) => {
+        let p = path.parse(file);
+        if (p.ext !== '.json') {
+            return;
+        }
+
+        let filepath = path.join(dir, file);
+
+        if (! fs.statSync(filepath).isFile()) {
+            return;
+        }
+
+        hooks[p.name] = require(filepath);
+    });
+
+    return hooks;
+}
+
+function startServer(config) {
+    const VERBOSE = config.verbose;
+
+    express()
+    .use(bodyParser.json())
+    .use('/api/webhook/', middleware({
+        verbose: config.verbose,
+        debug: config.debug,
+        bindings: config.hooks,
+        platforms: [
+            require('./src/github-extractor.js'),
+            require('./src/bitbucket-extractor.js'),
+        ],
+    }))
+    .listen(config.port, config.host, () => {
+        if (VERBOSE) {
+            console.log('Server started at %s:%s', config.host, config.port);
+        }
+    })
+    ;
+}
+
 process.on('uncaughtException', onError);
 
 function onError(error) {
     var msg;
     if (error instanceof Error) {
-        if (DEBUG) {
-            msg = error.stack;
-        } else {
-            msg = error.message;
-        }
+        msg = error.message + error.stack;
     } else {
         msg = error;
     }

@@ -1,0 +1,6 @@
+"test2": {
+    "enabled": false,
+    "exec": [
+        "echo $WEBHOOK_REPO"
+    ]
+}
